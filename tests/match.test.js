@@ -136,9 +136,7 @@ test('amical en nombre de sets fixe', () => {
   o.verifierMatch(env, m, { complet: true });
 });
 
-test('l\'exemple se charge et respecte les invariants', {
-  todo: 'bug connu : l\'exemple attribue un contre gagnant à un joueur en zone 1',
-}, () => {
+test('l\'exemple se charge et respecte les invariants', () => {
   const env = creerApp();
   assert.equal(env.ui.view, 'equipe');
   assert.ok(env.db.welcome, 'premier lancement : écran de bienvenue');
