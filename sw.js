@@ -1,10 +1,17 @@
 // Service worker de Stats Volley : l'app fonctionne sans réseau après la première ouverture.
-// À chaque mise à jour de l'app, changer VERSION (ex. 'sv-1.0.1') pour que les appareils récupèrent la nouvelle version.
-const VERSION = 'sv-1.0.0';
+// À chaque mise à jour de l'app, changer V (ex. '1.1.1'), ainsi que APP_VERSION (js/interface.js) et les ?v= de index.html.
+// Le test tests/version.test.js vérifie que les trois concordent.
+const V = '1.0.0';
+const VERSION = 'sv-' + V;
 const FONTS = 'sv-fonts';
+// Styles et scripts portent ?v= : une page neuve ne peut pas se retrouver avec les scripts de la version précédente.
 const CORE = [
   './',
   './index.html',
+  './styles.css?v=' + V,
+  './js/moteur.js?v=' + V,
+  './js/stats.js?v=' + V,
+  './js/interface.js?v=' + V,
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
@@ -13,7 +20,8 @@ const CORE = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));
+  // cache: 'reload' : on met en cache la version du serveur, pas une copie périmée du cache HTTP du navigateur.
+  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(CORE.map((u) => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (e) => {
@@ -43,7 +51,7 @@ self.addEventListener('fetch', (e) => {
   // Page : réseau d'abord (pour recevoir les mises à jour), cache si hors ligne.
   if (req.mode === 'navigate') {
     e.respondWith(
-      fetch(req)
+      fetch(req, { cache: 'no-cache' })
         .then((r) => { const copy = r.clone(); caches.open(VERSION).then((c) => c.put('./index.html', copy)); return r; })
         .catch(() => caches.match('./index.html'))
     );
