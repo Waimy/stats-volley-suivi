@@ -3,7 +3,7 @@
 
 /* ===================== État ===================== */
 const MODE_PWA = typeof window!=='undefined' && !!window.__PWA__;
-const APP_VERSION='1.0.0';
+const APP_VERSION='1.1.0';
 let db;
 const emptyDb=()=>({schema:SCHEMA, exemple:false, welcome:true, settings:{}, teamName:'Mon équipe', players:[], matches:[], currentMatchId:null});
 db = migrer(load()) || (MODE_PWA ? emptyDb() : seed());

@@ -137,6 +137,8 @@ async function parcours(browser, base, format) {
   assert.equal(sauvegarde.app, 'stats-volley');
   assert.equal(sauvegarde.db.matches.length, 1);
   assert.equal(sauvegarde.db.players.length, 12);
+  assert.equal(sauvegarde.db.schema, 1);
+  assert.equal(sauvegarde.version, await page.evaluate(() => APP_VERSION));
   ok('export (' + telechargement.suggestedFilename() + ')');
 
   // 8. Import sur un autre appareil : fichier invalide refusé, puis fusion.

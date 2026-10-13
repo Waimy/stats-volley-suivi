@@ -10,7 +10,9 @@ Application web installable (PWA) pour suivre les statistiques d'une équipe de 
 
 | Fichier | Rôle |
 |---|---|
-| `index.html` | L'application complète (interface + moteur de règles). |
+| `index.html` | La page de l'application. |
+| `styles.css`, `js/` | Styles, moteur de règles (`moteur.js`), statistiques (`stats.js`) et interface (`interface.js`). Pas d'étape de build : les fichiers sont servis tels quels. |
+| `tests/` | Tests automatiques : `node --test` à la racine (Node 22 ou plus). GitHub Actions les lance aussi à chaque envoi. |
 | `manifest.webmanifest` | Nom, icônes et couleurs pour l'installation sur l'écran d'accueil. |
 | `sw.js` | Service worker : mise en cache pour l'usage hors ligne. |
 | `icons/` | Icônes de l'app. |
@@ -47,8 +49,8 @@ L'app rappelle de sauvegarder si la dernière sauvegarde date de plus de 7 jours
 
 ## Mettre à jour l'app
 
-1. Remplace les fichiers modifiés dans le dépôt (en général `index.html`).
-2. Dans `sw.js`, change la ligne `const VERSION = 'sv-1.0.0';` (par exemple en `'sv-1.0.1'`).
+1. Remplace les fichiers modifiés dans le dépôt.
+2. Change le numéro de version à trois endroits : `const V = '1.1.0';` dans `sw.js`, `APP_VERSION` dans `js/interface.js`, et les `?v=1.1.0` de `index.html`. Le test `tests/version.test.js` vérifie qu'ils concordent.
 3. Les appareils récupèrent la nouvelle version à la prochaine ouverture avec du réseau. Si besoin, ferme complètement l'app et rouvre-la.
 
 Les données ne sont pas touchées par une mise à jour.

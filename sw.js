@@ -1,7 +1,7 @@
 // Service worker de Stats Volley : l'app fonctionne sans réseau après la première ouverture.
 // À chaque mise à jour de l'app, changer V (ex. '1.1.1'), ainsi que APP_VERSION (js/interface.js) et les ?v= de index.html.
 // Le test tests/version.test.js vérifie que les trois concordent.
-const V = '1.0.0';
+const V = '1.1.0';
 const VERSION = 'sv-' + V;
 const FONTS = 'sv-fonts';
 // Styles et scripts portent ?v= : une page neuve ne peut pas se retrouver avec les scripts de la version précédente.
