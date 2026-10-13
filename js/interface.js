@@ -5,8 +5,8 @@
 const MODE_PWA = typeof window!=='undefined' && !!window.__PWA__;
 const APP_VERSION='1.0.0';
 let db;
-const emptyDb=()=>({exemple:false, welcome:true, settings:{}, teamName:'Mon équipe', players:[], matches:[], currentMatchId:null});
-db = load() || (MODE_PWA ? emptyDb() : seed());
+const emptyDb=()=>({schema:SCHEMA, exemple:false, welcome:true, settings:{}, teamName:'Mon équipe', players:[], matches:[], currentMatchId:null});
+db = migrer(load()) || (MODE_PWA ? emptyDb() : seed());
 const DEFAULT_SETTINGS={details:'off', noteRecep:true, theme:'dark', c1:'#E8641B', c2:'#1F4E8C', bgAnim:true};
 function ensureSettings(){ db.settings=Object.assign({}, DEFAULT_SETTINGS, db.settings||{}); if(!db.settings.layouts||typeof db.settings.layouts!=='object') db.settings.layouts={}; }
 ensureSettings();
@@ -521,8 +521,9 @@ function lireImport(file){
       const o=JSON.parse(r.result), d=o&&o.db?o.db:o;
       const ok=d && Array.isArray(d.players) && Array.isArray(d.matches) && d.matches.every(m=>Array.isArray(m.convocations)&&Array.isArray(m.sets));
       if(!ok) throw new Error('format');
-      ui.imp={db:d, exportedAt:o.exportedAt||null}; ui.err='';
-    }catch(e){ ui.imp=null; ui.err="Ce fichier n'est pas une sauvegarde Stats volley valide."; }
+      if(d.schema>SCHEMA) throw new Error('recente');
+      ui.imp={db:migrer(d), exportedAt:o.exportedAt||null}; ui.err='';
+    }catch(e){ ui.imp=null; ui.err=e.message==='recente'?"Cette sauvegarde vient d'une version plus récente de l'app : mets l'app à jour, puis importe-la.":"Ce fichier n'est pas une sauvegarde Stats volley valide."; }
     render(); };
   r.onerror=()=>{ ui.err='Lecture du fichier impossible.'; render(); };
   r.readAsText(file);
@@ -681,7 +682,7 @@ function act(a,v){
     case 'reset': ui.confirm='reset'; break;
     case 'empty': ui.confirm='empty'; break;
     case 'reset-yes': { const keep=db.settings; db=seed(); db.settings=Object.assign({},keep); save(); ui=freshUI(null,'Exemple rechargé.'); break; }
-    case 'empty-yes': db={exemple:false, welcome:false, settings:db.settings, teamName:'Mon équipe', players:[], matches:[], currentMatchId:null}; save(); ui=freshUI('equipe','Tout est vide : ajoute tes joueurs.'); break;
+    case 'empty-yes': db={schema:SCHEMA, exemple:false, welcome:false, settings:db.settings, teamName:'Mon équipe', players:[], matches:[], currentMatchId:null}; save(); ui=freshUI('equipe','Tout est vide : ajoute tes joueurs.'); break;
   }
   render();
   if(['go','edit-ev','m-create','set-start','next-set','m-report','m-open','m-stats','undo','reset-yes','empty-yes','look'].includes(a) || (ui.view==='rapport'&&a==='joueur')){ try{ window.scrollTo({top:0}); }catch(err){} }

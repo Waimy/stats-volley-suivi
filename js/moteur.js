@@ -70,6 +70,19 @@ const KEY='statsvolley.v1';
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(db)); }catch(e){} }
 function load(){ try{ const s=localStorage.getItem(KEY); return s?JSON.parse(s):null; }catch(e){ return null; } }
 
+/* ===================== Version du schéma de données ===================== */
+// Tout changement du format de db : incrémenter SCHEMA et ajouter MIGRATIONS[ancien] qui fait passer une base de ancien à ancien+1.
+const SCHEMA=1;
+const MIGRATIONS={};
+// Met une base au schéma courant, sur place, et la renvoie. Les bases sans champ schema (app 1.0.x) sont au schéma 1.
+// Une base d'un schéma plus récent (app plus récente) est laissée telle quelle.
+function migrer(d){
+  if(!d || typeof d!=='object') return d;
+  if(d.schema==null) d.schema=1;
+  while(d.schema<SCHEMA){ MIGRATIONS[d.schema](d); d.schema++; }
+  return d;
+}
+
 /* ===================== Moteur : rejoue le journal ===================== */
 function pointsCible(m, numero){ const R=m.regles; return (R.mode==='bestOf' && numero===2*R.setsGagnants-1) ? R.pointsDernierSet : R.pointsParSet; }
 function conv(m,id){ return m.convocations.find(c=>c.id===id); }
@@ -249,7 +262,7 @@ function seed(){
   const P=[['Thomas','Lefebvre',3,'passeur'],['Julien','Dupont',7,'receptionneurAttaquant'],['Kevin','Martin',9,'central'],['Mathieu','Leroy',11,'pointu'],
     ['Camille','Roussel',5,'receptionneurAttaquant'],['Laura','Caron',12,'central'],['Romain','Delattre',1,'libero'],['Benoît','Lemaire',8,'polyvalent'],
     ['Sarah','Fournier',10,'receptionneurAttaquant'],['Hugo','Vasseur',14,'central'],['Damien','Petit',6,'passeur'],['Pierre','Lambert',4,'pointu']];
-  const d={exemple:true, settings:{details:'off', noteRecep:true}, teamName:"Mon équipe (exemple)", players:P.map(([prenom,nom,numero,poste])=>({id:uid(),prenom,nom,numero,poste,postes:[poste],actif:true})), matches:[], currentMatchId:null};
+  const d={schema:SCHEMA, exemple:true, settings:{details:'off', noteRecep:true}, teamName:"Mon équipe (exemple)", players:P.map(([prenom,nom,numero,poste])=>({id:uid(),prenom,nom,numero,poste,postes:[poste],actif:true})), matches:[], currentMatchId:null};
   const m={id:uid(), date:'2026-10-10', adversaire:'Volley Club Exemple', type:'officiel', regles:{...PRESETS.officiel}, forceFin:false,
     convocations:d.players.slice(0,10).map((p,k)=>{ const lib=p.poste==='libero'||k===7; return {id:uid(), playerId:p.id, numero:p.numero, poste:lib?'libero':p.poste, libero:lib}; }), sets:[]};
   const C=m.convocations.map(c=>c.id);
