@@ -144,9 +144,7 @@ test('correction : libéro, joueur remplacé par le libéro et blessés ne sont 
   assert.ok(!cands.includes(L) && !cands.includes(F[4]));
 });
 
-test('une modification ouverte depuis le compte rendu ne passe pas au set suivant', {
-  todo: 'bug connu : « Préparer le set suivant » ne ferme pas la modification en cours',
-}, () => {
+test('une modification ouverte depuis le compte rendu ne passe pas au set suivant', () => {
   const { env, m } = preparer();
   o.finirSet(env, 25, 10);
   assert.equal(env.ui.view, 'rapport');

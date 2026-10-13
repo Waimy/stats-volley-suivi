@@ -11,11 +11,6 @@ const NB_MATCHS = Number(process.env.SIM_MATCHS || 48);
 const PREMIERE = Number(process.env.SIM_GRAINE || 1);
 const SEULE = !!process.env.SIM_GRAINE;
 const MAX_ACTIONS = 6000;
-// Bugs connus du code actuel, contournés pour que la simulation puisse chercher les autres.
-const CONTOURNEMENTS = {
-  // Une modification de point ouverte depuis le compte rendu survit à « Préparer le set suivant » et s'applique au nouveau set.
-  editionSetSuivant: true,
-};
 
 // Poids des boutons que le « joueur au banc » peut toucher pendant un match.
 const POIDS = {
@@ -67,8 +62,6 @@ function jouerUnMatch(graine, couverture) {
     if (b.a === 'lib-redes') remplir('lib-redes');
     if (b.a === 'lib-in') remplir('lib-choice');
     const nbEv = m.sets.reduce((a, s) => a + s.events.length, 0);
-    // Contournement des bugs connus, retiré quand le bug est corrigé.
-    if (CONTOURNEMENTS.editionSetSuivant && (b.a === 'next-set' || b.a === 'set-start') && env.ui.entry) env.act('entry-cancel');
 
     try {
       env.act(b.a, b.v, champs);

@@ -1240,8 +1240,8 @@ function act(a,v){
     case 'c-serv': ui.compo.service=v; break;
     case 'set-start': { const c=ui.compo; if(!c||c.slots.some(x=>!x)){ ui.err='Place un joueur dans chacune des 6 zones.'; break; }
       m.sets.push({numero:m.sets.length+1, serviceInitial:c.service, formation:[...c.slots], liberoId:c.libero, events:[]});
-      ui.compo=null; ui.err=''; ui.recep=null; ui.journalAll=false; save(); ui.view='live'; break; }
-    case 'next-set': ui.compo=null; ui.edit=false; ui.view='compo'; break;
+      ui.compo=null; ui.err=''; ui.recep=null; ui.entry=null; ui.journalAll=false; save(); ui.view='live'; break; }
+    case 'next-set': ui.compo=null; ui.edit=false; ui.entry=null; ui.view='compo'; break;
     case 'm-finish': m.forceFin=true; save(); ui.view='rapport'; ui.reportMatch=m.id; ui.reportSet='all'; break;
     case 'm-open': db.currentMatchId=v; save(); ui.compo=null; { const mm=curMatch(); ui.view=needsCompo(mm)?'compo':'live'; } break;
     case 'm-report': { const [id,set]=v.split('|'); ui.reportMatch=id; ui.reportSet=set||'all'; ui.view='rapport'; ui.edit=false; break; }
